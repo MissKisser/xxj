@@ -1,0 +1,15 @@
+# 凭证（含 TMDB API Key）
+haibao_config.php
+
+# 运行时缓存
+cache/
+
+# 开发过程文件
+*.bak
+*.bak*
+PLAN.md
+CLAUDE.md
+
+# Claude Code / OMC
+.claude/
+.omc/

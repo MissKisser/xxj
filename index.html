@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Demo</title>
+		<!-- <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">-->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.6.8/css/layui.min.css" type="text/css" rel="stylesheet" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.6.8/layui.min.js"></script>
+		<style>
+			.layui-form-label {
+				width: 100px;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="width: 200px;margin: 0 auto;margin-top: 10px;"><img
+				src="https://baiduc.github.io/pub/bbj/plug/img/bbjlogoline.png" width="200" /></div>
+		<div class="layui-tab layui-tab-brief">
+			<ul class="layui-tab-title">
+				<li class="layui-this">海报图</li>
+				<li>弹幕库</li>
+				<li>评论库</li>
+				<li><a href="/bbj/clear.php">清除BBJ缓存</a></li>
+			</ul>
+			<div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+					<form class="layui-form" action="" id="myForm">
+						<div class="layui-form-item" style="display: none">
+							<div class="layui-input-block">
+								<input type="radio" name="cmsname" lay-filter="haibaoType" value="maccms10" checked>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">更新方式</label>
+							<div class="layui-input-block">
+								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="hot" checked
+									title="自动更新最热海报">
+								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="new" title="自动更新最新海报">
+								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="even" title="各分类均衡获取">
+							</div>
+						</div>
+						<div class="layui-form-item  haibaoCode">
+							<label class="layui-form-label">更新代码</label>
+							<div class="layui-inline">
+								<dic id="use-php">
+									<input type="radio" name="codetype" lay-filter="haibaoCode" value="php" checked
+										title="使用php代码">
+								</dic>
+
+							</div>
+						</div>
+						<div class="layui-form-item haibaoFiltercondi">
+							<label class="layui-form-label">更新条件</label>
+							<div class="layui-input-block">
+								<input type="radio" name="filtercondi" lay-filter="haibaoFiltercondi" value="doubanid"
+									checked title="豆瓣id">
+								<input type="radio" name="filtercondi" lay-filter="haibaoFiltercondi" value="name"
+									title="影片名称">
+							</div>
+						</div>
+						<div class="layui-form-item haibaoOrderby" style="display: none">
+							<label class="layui-form-label">重复片名</label>
+							<div class="layui-inline">
+								<dic>
+
+									<input type="radio" name="orderby" value="ASC" checked title="取最近一次">
+								</dic>
+								<dic>
+									<input type="radio" name="orderby" value="DESC" title="取第一次">
+								</dic>如果出现重名，请选择更新前后
+							</div>
+
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">轮播数量</label>
+								<div class="layui-input-inline">
+									<input type="number" name="num" data-step="1" data-maxvalue="20" data-minvalue="1"
+										lay-verify="required" autocomplete="off" class="layui-input num" max="20"
+										min="1" value="10">
+
+								</div>网站显示几张轮播图片(最多20)
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline ">
+								<label class="layui-form-label">推荐等级</label>
+								<div class="layui-input-inline">
+									<select name="level" lay-filter="aihao">
+										<option value="1">推荐1</option>
+										<option value="2">推荐2</option>
+										<option value="3">推荐3</option>
+										<option value="4">推荐4</option>
+										<option value="5">推荐5</option>
+										<option value="6">推荐6</option>
+										<option value="7">推荐7</option>
+										<option value="8">推荐8</option>
+										<option value="9" selected>推荐9</option>
+									</select>
+
+								</div>
+								当前模板或者app海报显示推荐值
+							</div>
+						</div>
+						<div>自动更新海报轮播图，支持一切网页，支持一切app（包含不仅限于sk,appto,lvdou,xiaogui,Muou...)</div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								<button class="layui-btn" lay-submit="" lay-filter="submitBtn">获取代码</button>
+								<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+								<button type="button" class="layui-btn layui-btn-primary"><a
+										href="https://c1dmgq3e3j7.feishu.cn/docx/VR4hdZlB3oEs9yxNbUDcrXtvnxe#XDUadHfgiouezPxoF0gcoIXsnNb">使用教程</a>
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="layui-tab-item">
+					<h2 style="margin: 10px 20px;"><a target="_blank" href="https://jifei.bbj.icu"
+							style="color: red;">获取弹幕完整教程(适用所有网页，skapp，appto，aiapp，木偶...)</a></h2>
+					<div style="margin: 10px 20px;">json:</div>
+					<div style="margin: 10px 50px;"> 通用弹幕库接口地址： https://dm.bbj.icu/dm?ac=dm</div>
+					<div style="margin: 10px 50px;"> 默认接口弹幕纯白色： https://dm.bbj.icu/dm?ac=dm</div>
+					<div style="margin: 10px 50px;"> 弹幕少量彩色： https://dm.bbj.icu/dm?color=less&ac=dm</div>
+					<div style="margin: 10px 50px;"> 弹幕大量彩色： https://dm.bbj.icu/dm?color=more&ac=dm</div>
+					<div style="margin: 10px 20px;">xml:</div>
+					<div style="margin: 10px 50px;"> xml弹幕库接口地址： https://dm.bbj.icu/dm?type=xml</div>
+					<div style="margin: 10px 50px;"> xml接口弹幕纯白色： https://dm.bbj.icu/dm?type=xml</div>
+					<div style="margin: 10px 50px;"> xml弹幕少量彩色： https://dm.bbj.icu/dm?type=xml&color=less</div>
+					<div style="margin: 10px 50px;"> xml弹幕大量彩色： https://dm.bbj.icu/dm?type=xml&color=more</div>
+					<div style="margin: 10px 20px;">根据上面的链接可自行配置参数</div>
+					<h2 style="margin: 10px 20px;"><a target="_blank" href="https://baiduc.github.io/pub/bbj/jar/word.html"
+							style="color: red;">弹幕软件(适用vidz，绿豆app...)</a></h2>
+					<div style="margin: 10px 20px;">部分示例:</div>
+					<div style="margin: 10px 20px;"><a target="_blank" href="https://jifei.bbj.icu"
+							style="color: red;">skapp弹幕库配置</a></div>
+					<div style="margin: 10px 20px;"><a target="_blank" href="https://jifei.bbj.icu"
+							style="color: red;">appto弹幕库配置</a></div>
+					<div style="margin: 10px 20px;"><a target="_blank" href="https://jifei.bbj.icu"
+							style="color: red;">超级播放器弹幕库配置</a></div>
+					<div style="margin: 10px 20px;"><a target="_blank" href="https://jifei.bbj.icu"
+							style="color: red;">觅知播放器弹幕库配置</a></div>
+					<div style="margin: 10px 20px;"><a target="_blank" href="https://jifei.bbj.icu"
+							style="color: red;">纯净版art弹幕库配置</a></div>
+					<div>
+						目前弹幕库支持：腾讯官方，奇异官方，油库官方，芒果官方，飞云切片，左岸切片，NBY切片，仓兰切片，三路切片，非凡资源，红牛资源，索尼资源,1080资源,淘片资源,量子资源；需要其他自切资源或者资源站弹幕，可联系管理员添加
+					</div>
+				</div>
+				<div class="layui-tab-item">
+					<form class="layui-form" action="" id="pinglun-form">
+
+						<div class="layui-form-item">
+							<label class="layui-form-label">数据状态</label>
+							<div class="layui-input-block">
+								<input type="radio" name="statu" lay-filter="haibaoType" value="1" checked title="已审核">
+								<input type="radio" name="statu" lay-filter="haibaoType" value="0" title="未审核">
+							</div>
+							<div>未审核状态将不会展示数据</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">采集方式</label>
+							<div class="layui-input-block">
+								<input type="radio" name="vodname" lay-filter="haibaoType" value="0" checked
+									title="根据豆瓣id采集">
+								<input type="radio" name="vodname" lay-filter="haibaoType" value="1" title="根据剧名采集">
+							</div>
+							<div>如果数据中不存在豆瓣id请用名称采集</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">随机采集数量</label>
+							<div class="layui-input-inline" style="width: 200px;">
+								<input type="number" name="num" placeholder="默认10条左右" autocomplete="off" value="10"
+									class="layui-input" min="0" step="1" max="30" lay-affix="number">
+							</div>
+
+							<div> 默认10条左右,每剧最多30条,太多也没必要</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">随机顶数<svg t="1709185180633" class="icon"
+									viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5006"
+									width="16" height="16">
+									<path
+										d="M1023.968 649.53699999c0-35.45599999-12.192-62.496-36.032-78.20799999C1002.39999999 563.137 1023.712 522.626 1023.712 486.849c-1.44-59.104-58.624-102.91200001-144.96000001-102.912l-228.92899999 0c39.2-106.688 31.808-250.56-17.345-327.36-29.599-46.208-65.152-56.576-89.824-56.576-83.072 0-85.792 80.032-85.792 107.26400001 0 91.073-13.151 132.576-29.536 170.84799999-12.992 24.76800001-92.512 106.24-173.76 106.24L101.31 384.353c-58.785 0-101.408 49.216-101.312 119.264l39.488 416.672C44.254 984.481 75.774 1023.36 139.006 1023.361c0 0 31.487 0.25600001 55.072 0.256 12.032 0 23.264-0.096 29.921-0.256 19.489-0.64 35.552-13.11999999 49.761-23.616 10.048-7.392 18.016-13.824 25.248-13.824 3.231 0 21.696 10.592 44.352 20.224C366.464 1015.904 403.10299999 1024.001 438.144 1024.002L756.575 1024.002c106.75200001 0 158.016-40 158.01599999-106.688 0-19.71099999-4.54500001-31.392-15.48799999-46.656 42.849-10.272 80.864-37.21599999 80.864-83.68 0-17.248-8.128-44.96-19.232-52.32 20.96-5.34399999 63.296-42.721 63.23199999-85.12zM222.432 981.37499999c-19.072 0.608-87.48700001 0-87.936 0-24.544 0-46.303-23.136-51.84-54.20799999l-39.488-433.152c0-32.41700001 26.08-67.936 60.896-67.93600001l0 0.22300002 149.504 0.44799999c2.56 0 5.088-0.32 7.616-0.416L261.184 956.22100001A938.868 938.868 0 0 0 243.2 969.117c-6.336 4.672-16.927 11.808-20.768 12.256zM920.64 706.304l-5.793 0 0.54399999 38.656c4.639 1.76 21.76 6.912 21.79200001 40.512 0 36-47.296 50.464-87.136 50.464l0.096 0-0.672 36.832c16.224 3.616 22.048 17.792 22.016 40.448 0 39.616-32.192 68.16000001-115.808 68.16l-329.761 0c-15.776 0-47.807-9.184-66.271-18.112-17.408-8.416-45.312-24.16-54.944-29.376l0-514.56000001c82.912-22.976 151.36000001-94.496 168.64-127.51999999 18.784-43.68 28.192-89.344 28.192-189.504 0-49.761 18.272-56.448 37.728-56.44799999 17.217 0 44.576 18.976 58.4 40.60799999 40.928 63.903 50.496 201.568-0.416 304.67199999l-8.767 35.68000002 292.256-0.06400001c49.76 2.72 99.776 23.07200001 99.776 59.776l-0.352 11.488c0.161 0.48-1.216 31.808-17.888 45.632-13.984 11.616-25.312 12-25.312 12l-0.32 38.048s16.864 2.272 25.664 8.32c13.248 9.088 19.264 26.304 18.56 45.12-0.864 23.808-37.664 59.169-60.224 59.168z"
+										fill="#333333" p-id="5007"></path>
+								</svg></label>
+							<div class="layui-input-inline" style="width: 100px;">
+								<input type="number" name="Dmin" placeholder="" autocomplete="off" value="10"
+									class="layui-input" min="0" step="1" lay-affix="number">
+							</div>
+							<div class="layui-form-mid">-</div>
+							<div class="layui-input-inline" style="width: 100px;">
+								<input type="number" name="Dmax" placeholder="" autocomplete="off" value="100"
+									class="layui-input" min="0" step="1" lay-affix="number">
+							</div>
+							<div>随机顶数建议10-100</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">随机踩数<svg t="1709185336229" class="icon"
+									viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+									p-id="13189" width="16" height="16">
+									<path
+										d="M850.9 654.6c-32.2 8.5-108 8.4-218.9 11.3 5.3 24.2 6.4 46 6.4 84.8 0 92.5-67.4 174-127 174-42.1 0-76.8-34.4-77.4-76.8-0.6-51.9-16.6-141.6-103.2-187.1-6.3-3.4-24.5-12.3-27.2-13.5l1.4-1.2c-13.6 11.7-32.3 20.6-51.6 20.6H176c-42.7 0-77.4-34.7-77.4-77.4V176.7c0-42.7 34.7-77.4 77.4-77.4h77.4c30.7 0 56.4 18.5 68.8 44.5 0.3-0.1 0.9-0.3 1.2-0.3 1.7-0.5 3.7-1 6.2-1.6 0.5-0.1 0.7-0.1 1.2-0.3 14.9-3.7 43.4-10.5 104.6-24.6 13.1-3 82.3-17.7 154.1-17.7h141c43 0 74.8 16 92.4 49.7 17.1 30 101.3 190.6 101.2 416.9-0.1 32.7-22.6 74.2-73.2 88.7zM279.3 176.7c0-14.3-11.5-25.8-25.8-25.8h-77.4c-14.3 0-25.8 11.5-25.8 25.8v412.7c0 14.3 11.5 25.8 25.8 25.8h77.4c14.3 0 25.8-11.5 25.8-25.8V176.7z m592.6 373.1c-10.8-259.2-94.5-376.3-94.5-376.3-7.8-14.1-20.4-22.5-46.9-22.5h-141c-70.8 0-141.1 16.1-142.9 16.5-107.1 24.7-112.8 26.6-119.5 28.5l3.8 378.9c0 39.2 0.9 29.3 0 28.8 117.8 48.8 153.7 155.8 154.7 243.6 0.2 12.3 9.7 25.8 25.8 25.8 27.3 0 75.5-54.7 75.5-122.5 0-61.1-2.4-71.7-23.9-135.5 257.9 0 256.1-3.7 278.9-9.7 28.2-8.1 30.6-31.4 30.6-39.5 0-8.7-0.3-7.4-0.6-16.1z m0 0"
+										fill="" p-id="13190"></path>
+								</svg></label>
+							<div class="layui-input-inline" style="width: 100px;">
+								<input type="number" name="Cmin" placeholder="" autocomplete="off" value="0"
+									class="layui-input" min="0" step="1" lay-affix="number">
+							</div>
+							<div class="layui-form-mid">-</div>
+							<div class="layui-input-inline" style="width: 100px;">
+								<input type="number" name="Cmax" placeholder="" autocomplete="off" value="5"
+									class="layui-input" min="0" step="1" lay-affix="number">
+							</div>
+							<div>随机踩数建议0-5（不生成踩数填0-0）</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">显示ip地址信息</label>
+							<div class="layui-input-block">
+								<input type="radio" name="Cip" lay-filter="haibaoType" value="0" checked title="是">
+								<input type="radio" name="Cip" lay-filter="haibaoType" value="1" title="否">
+							</div>
+							<div>会在评论处显示出ip信息</div>
+						</div>
+						<div class="layui-form-item layui-form-text">
+							<label class="layui-form-label">数据过滤</label>
+							<div class="layui-input-block">
+								<textarea placeholder="多个用英文,号分割" class="layui-textarea" name="filder"
+									style="width: 300px;">逼,操,色</textarea>
+							</div>
+						</div>
+						<div class="layui-input-inline">
+							<label class="layui-form-label">评论库key
+								<a target="_blank" href="https://jifei.bbj.icu">
+									<i class="layui-icon layui-icon-tips" lay-tips="点击查看如何获取key"></i></a></label>
+							<div class="layui-input-inline layui-input-wrap">
+								<input type="text" name="pinglunkey" lay-verify="required" autocomplete="off"
+									lay-affix="clear" class="layui-input" placeholder="xxxxxxxx">
+
+
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								<!-- <a href="./pinglun.php?type=all" target="_blank"> -->
+								<button class="layui-btn" lay-submit="" lay-filter="upAll">
+									更新所有评论</button>首次使用请点这个，将会依次更新所有资源的评论
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								<button class="layui-btn" lay-filter="upDay" lay-submit="">更新当日新增剧的评论</button>
+							</div>
+						</div>
+					</form>
+					<div style="margin: 10px 40px;">
+					</div>
+				</div>
+				<div class="layui-tab-item">正在清除缓存</div>
+				<div class="layui-tab-item">内容-5</div>
+			</div>
+		</div>
+		<div>本插件公益开发，开源代码无任何加密和后门。开源插件地址https://baiduc.github.io/pub/bbj/plug/word.html<a target='_blank'
+				href='https://qm.qq.com/cgi-bin/qm/qr?k=3RDxZ43w022j4HgrJG-DBEIiSLHfweTs&jump_from=webapi&authKey=bc3bpqxO9U+VqNAoVxELmRNPXnVN5fF8us0EjM1yxj8045Df4RRQcnxE4n5WT7Zw'><img
+					border='0' src='//pub.idqqimg.com/wpa/images/group.png' alt='BB机海报' title='BB机海报'>822011364</a>
+		</div>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+			type="application/javascript"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.6.1/clipboard.min.js"
+			type="application/javascript"></script>
+		<script>
+			$(".layui-tab-item img").click(function() {
+				var sr = $(this).attr("src")
+				layer.photos({
+					photos: {
+						"title": "BBJ图片放大器",
+						"start": 0,
+						"data": [{
+							"alt": "浩瀚宇宙",
+							"pid": 5,
+							"src": sr,
+						}]
+					},
+					footer: true // 是否显示底部栏 --- 2.8.16+
+				});
+
+			})
+			var formData;
+			layui.use(function() {
+				var form = layui.form;
+
+				form.on('radio(haibaoType)', function(data) {
+					$(".haibaoCode").css("display", "block")
+					if (data.value === "hand") {
+						$(".haibaoType-hand").css("display", "inline-block")
+						$('#use-php').css('display', "none");
+						$('#use-shell').css('display', "none");
+						$('#use-sql').css('display', "inline-block");
+						$("#use-sql input").prop("checked", true);
+						$(".haibaoFiltercondi").css("display", "none")
+						$(".haibaoCode-tb").css("display", "block")
+					} else {
+						$(".haibaoType-hand").css("display", "none")
+						$('#use-sql').css('display', "none");
+						$('#use-php').css('display', "inline-block");
+						$('#use-shell').css('display', "inline-block");
+						$("#use-php input").prop("checked", true);
+						$(".haibaoFiltercondi").css("display", "inline-block")
+						$(".haibaoCode-tb").css("display", "none")
+					}
+					$(".haibaoCode-db").css("display", "none")
+
+
+					form.render();
+				});
+				form.on('radio(haibaoCode)', function(data) {
+					if (data.value === "shell") {
+						$(".haibaoCode-db").css("display", "block")
+						$(".haibaoCode-tb").css("display", "block")
+					} else {
+						$(".haibaoCode-db").css("display", "none")
+						$(".haibaoCode-tb").css("display", "none")
+					}
+				})
+				form.on('radio(haibaoFiltercondi)', function(data) {
+					if (data.value === "name") {
+						$(".haibaoOrderby").css("display", "block")
+					} else {
+						$(".haibaoOrderby").css("display", "none")
+					}
+				})
+				layui.config({
+					intercept: false
+				});
+				form.on('submit(submitBtn)', function(data) {
+					// 阻止表单默认提交行为
+					formData = data.field;
+
+					// 打印输出所有数据
+					console.log(formData);
+					var queryString = Object.keys(formData).map(function(key) {
+						return encodeURIComponent(key) + "=" + encodeURIComponent(formData[key]);
+					}).join("&");
+					var currentUrl = window.location.href;
+
+					// 拼接查询字符串到链接的尾部
+					currentUrl = currentUrl.replace("index.php", "haibao.php") + "?" + queryString;
+					layer.alert("复制此链接并创建定时任务，即可每日自动更新海报<br>" + currentUrl, {
+						btn: ['打开链接', '复制链接'],
+						btnAlign: 'c', // 按钮居中显示
+						shadeClose: true,
+						title: '创建成功',
+						btn1: function() {
+							window.open(currentUrl)
+							return false
+						},
+						btn2: function() {
+							var content = currentUrl
+							var clipboard = new Clipboard(".layui-layer-btn1", {
+								text: function() {
+									return content;
+								}
+							});
+							clipboard.on('success', function(e) {
+								var othis = $(this);
+								var offset = othis.data('offset');
+								layer.msg('复制成功', {
+									type: 1,
+									time: 1000,
+									offset: 'auto', // 详细可参考 offset 属性
+									id: 'ID-demo-layer-offset-' + offset, // 防止重复弹出
+									content: '<div style="padding: 16px;">复制成功</div>',
+									area: '240px',
+									btnAlign: 'c', // 按钮居中
+									shade: 0, // 不显示遮罩
+								});
+
+
+							});
+							clipboard.on('error', function(e) {
+								layer.msg("图片链接复制失败,请右键手动复制")
+							});
+							return false
+						}
+
+					});
+					form.render();
+
+					return false;
+				})
+				form.on('submit(upAll)', function(data) {
+					// 阻止表单默认提交行为
+					formData = data.field;
+
+					// 打印输出所有数据
+					console.log(formData);
+					var queryString = Object.keys(formData).map(function(key) {
+						return encodeURIComponent(key) + "=" + encodeURIComponent(formData[key]);
+					}).join("&");
+					var currentUrl = window.location.href;
+
+					// 拼接查询字符串到链接的尾部
+					currentUrl = currentUrl.replace("index.php", "pinglun.php") + "?type=all&" + queryString;
+					console.log(currentUrl)
+					window.open(currentUrl, '_blank');
+					form.render();
+
+					return false;
+				})
+				form.on('submit(upDay)', function(data) {
+					// 阻止表单默认提交行为
+					formData = data.field;
+
+					// 打印输出所有数据
+					console.log(formData);
+					var queryString = Object.keys(formData).map(function(key) {
+						return encodeURIComponent(key) + "=" + encodeURIComponent(formData[key]);
+					}).join("&");
+					var currentUrl = window.location.href;
+
+					// 拼接查询字符串到链接的尾部
+					currentUrl = currentUrl.replace("index.php", "pinglun.php") + "?type=day&" + queryString;
+					console.log(currentUrl)
+					window.open(currentUrl, '_blank');
+					form.render();
+
+					return false;
+				})
+				form.render();
+				$(document).on('keyup', function(e) {
+					if (e.keyCode === 27) {
+						layer.closeAll();
+					}
+				});
+				$('.layui-icon[lay-tips]').hover(function() {
+					var tipText = $(this).attr('lay-tips');
+					layer.tips(tipText, this, {
+						tips: [1, '#000']
+					});
+				}, function() {
+					layer.closeAll('tips');
+				});
+
+			})
+		</script>
+	</body>
+</html>
+
+
