@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Demo</title>
 		<!-- <link href="https://www.layuicdn.com/layui/css/layui.css" rel="stylesheet">-->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.6.8/css/layui.min.css" type="text/css" rel="stylesheet" />
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.6.8/css/layui.min.css" type="text/css" rel="stylesheet" />
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.6.8/layui.min.js"></script>
 		<style>
 			.layui-form-label {
@@ -33,42 +33,38 @@
 							<label class="layui-form-label">更新方式</label>
 							<div class="layui-input-block">
 								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="hot" checked
-									title="自动更新最热海报">
-								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="new" title="自动更新最新海报">
-								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="even" title="各分类均衡获取">
+									title="最热海报">
+								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="new" title="最新海报">
+								<input type="radio" name="bbjtype" lay-filter="haibaoType" value="top" title="最高分海报">
 							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">自动补齐</label>
+							<div class="layui-input-block">
+								<input type="checkbox" name="autofill" value="on"
+									lay-skin="switch" lay-text="开启|关闭" checked>
+							</div>
+							<div class="layui-form-mid layui-word-aux">匹配不足时自动翻页补齐</div>
 						</div>
 						<div class="layui-form-item  haibaoCode">
 							<label class="layui-form-label">更新代码</label>
 							<div class="layui-inline">
-								<dic id="use-php">
+								<div id="use-php">
 									<input type="radio" name="codetype" lay-filter="haibaoCode" value="php" checked
 										title="使用php代码">
-								</dic>
-
-							</div>
-						</div>
-						<div class="layui-form-item haibaoFiltercondi">
-							<label class="layui-form-label">更新条件</label>
-							<div class="layui-input-block">
-								<input type="radio" name="filtercondi" lay-filter="haibaoFiltercondi" value="doubanid"
-									checked title="豆瓣id">
-								<input type="radio" name="filtercondi" lay-filter="haibaoFiltercondi" value="name"
-									title="影片名称">
+								</div>
 							</div>
 						</div>
 						<div class="layui-form-item haibaoOrderby" style="display: none">
 							<label class="layui-form-label">重复片名</label>
 							<div class="layui-inline">
-								<dic>
-
+								<div>
 									<input type="radio" name="orderby" value="ASC" checked title="取最近一次">
-								</dic>
-								<dic>
+								</div>
+								<div>
 									<input type="radio" name="orderby" value="DESC" title="取第一次">
-								</dic>如果出现重名，请选择更新前后
+								</div>如果出现重名，请选择更新前后
 							</div>
-
 						</div>
 						<div class="layui-form-item">
 							<div class="layui-inline">
@@ -77,7 +73,6 @@
 									<input type="number" name="num" data-step="1" data-maxvalue="20" data-minvalue="1"
 										lay-verify="required" autocomplete="off" class="layui-input num" max="20"
 										min="1" value="10">
-
 								</div>网站显示几张轮播图片(最多20)
 							</div>
 						</div>
@@ -96,7 +91,6 @@
 										<option value="8">推荐8</option>
 										<option value="9" selected>推荐9</option>
 									</select>
-
 								</div>
 								当前模板或者app海报显示推荐值
 							</div>
@@ -133,73 +127,30 @@
 							"src": sr,
 						}]
 					},
-					footer: true // 是否显示底部栏 --- 2.8.16+
+					footer: true
 				});
-
 			})
 			var formData;
 			layui.use(function() {
 				var form = layui.form;
 
-				form.on('radio(haibaoType)', function(data) {
-					$(".haibaoCode").css("display", "block")
-					if (data.value === "hand") {
-						$(".haibaoType-hand").css("display", "inline-block")
-						$('#use-php').css('display', "none");
-						$('#use-shell').css('display', "none");
-						$('#use-sql').css('display', "inline-block");
-						$("#use-sql input").prop("checked", true);
-						$(".haibaoFiltercondi").css("display", "none")
-						$(".haibaoCode-tb").css("display", "block")
-					} else {
-						$(".haibaoType-hand").css("display", "none")
-						$('#use-sql').css('display', "none");
-						$('#use-php').css('display', "inline-block");
-						$('#use-shell').css('display', "inline-block");
-						$("#use-php input").prop("checked", true);
-						$(".haibaoFiltercondi").css("display", "inline-block")
-						$(".haibaoCode-tb").css("display", "none")
-					}
-					$(".haibaoCode-db").css("display", "none")
-
-
-					form.render();
-				});
-				form.on('radio(haibaoCode)', function(data) {
-					if (data.value === "shell") {
-						$(".haibaoCode-db").css("display", "block")
-						$(".haibaoCode-tb").css("display", "block")
-					} else {
-						$(".haibaoCode-db").css("display", "none")
-						$(".haibaoCode-tb").css("display", "none")
-					}
-				})
-				form.on('radio(haibaoFiltercondi)', function(data) {
-					if (data.value === "name") {
-						$(".haibaoOrderby").css("display", "block")
-					} else {
-						$(".haibaoOrderby").css("display", "none")
-					}
-				})
-				layui.config({
-					intercept: false
-				});
 				form.on('submit(submitBtn)', function(data) {
-					// 阻止表单默认提交行为
 					formData = data.field;
 
-					// 打印输出所有数据
-					console.log(formData);
+					// autofill 开关未勾选时，手动补 autofill=off
+					if (!formData.hasOwnProperty('autofill')) {
+						formData.autofill = 'off';
+					}
+
 					var queryString = Object.keys(formData).map(function(key) {
 						return encodeURIComponent(key) + "=" + encodeURIComponent(formData[key]);
 					}).join("&");
 					var currentUrl = window.location.href;
 
-					// 拼接查询字符串到链接的尾部
 					currentUrl = currentUrl.replace("index.php", "haibao.php") + "?" + queryString;
 					layer.alert("复制此链接并创建定时任务，即可每日自动更新海报<br>" + currentUrl, {
 						btn: ['打开链接', '复制链接'],
-						btnAlign: 'c', // 按钮居中显示
+						btnAlign: 'c',
 						shadeClose: true,
 						title: '创建成功',
 						btn1: function() {
@@ -219,28 +170,24 @@
 								layer.msg('复制成功', {
 									type: 1,
 									time: 1000,
-									offset: 'auto', // 详细可参考 offset 属性
-									id: 'ID-demo-layer-offset-' + offset, // 防止重复弹出
+									offset: 'auto',
+									id: 'ID-demo-layer-offset-' + offset,
 									content: '<div style="padding: 16px;">复制成功</div>',
 									area: '240px',
-									btnAlign: 'c', // 按钮居中
-									shade: 0, // 不显示遮罩
+									btnAlign: 'c',
+									shade: 0,
 								});
-
-
 							});
 							clipboard.on('error', function(e) {
 								layer.msg("图片链接复制失败,请右键手动复制")
 							});
 							return false
 						}
-
 					});
 					form.render();
-
 					return false;
 				})
-				
+
 				$('.layui-icon[lay-tips]').hover(function() {
 					var tipText = $(this).attr('lay-tips');
 					layer.tips(tipText, this, {
@@ -249,10 +196,7 @@
 				}, function() {
 					layer.closeAll('tips');
 				});
-
 			})
 		</script>
 	</body>
 </html>
-
-
