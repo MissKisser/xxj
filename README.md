@@ -94,6 +94,8 @@ return [
 
 将 `xxj/` 目录上传至站点根目录：
 
+![解压到根目录](install-unzip.png)
+
 ```
 /www/wwwroot/your-site/
 └── xxj/
@@ -111,6 +113,8 @@ return [
 ```
 XXJ管理,/xxj/index.php
 ```
+
+![添加自定义快捷菜单](install-menu.png)
 
 ## 使用
 
