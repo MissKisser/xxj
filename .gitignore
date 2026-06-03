@@ -9,6 +9,7 @@ cache/
 *.bak*
 PLAN.md
 CLAUDE.md
+SPEC.md
 
 # Claude Code / OMC
 .claude/

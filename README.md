@@ -48,13 +48,15 @@ XXJ 由 [BBJ](https://baiduc.github.io/pub/bbj/plug/word.html) 二次开发而�
 ## 文件说明
 
 ```
-bbj/
+xxj/
 ├── haibao.php          # 海报更新入口（核心业务）
-├── haibao_config.php   # TMDB 凭证与运行参数配置
+├── haibao_config.php   # TMDB 凭证与运行参数配置（需自行创建）
+├── haibao_config.example.php  # 配置文件模板
 ├── index.php           # 管理界面入口
 ├── index.html          # 管理界面（layui 表单）
 ├── pinglun.php         # 评论入口（已禁用）
 ├── clear.php           # 缓存清理工具
+├── 使用教程.txt         # 安装使用说明
 ├── cache/              # 文件缓存目录（运行时自动创建）
 └── .gitignore          # 忽略凭证与缓存
 ```
@@ -90,11 +92,11 @@ return [
 
 ### 3. 安装到苹果 CMS
 
-将 `bbj/` 目录上传至站点根目录：
+将 `xxj/` 目录上传至站点根目录：
 
 ```
 /www/wwwroot/your-site/
-└── bbj/
+└── xxj/
     ├── haibao.php
     ├── haibao_config.php
     ├── index.php
@@ -107,14 +109,14 @@ return [
 在苹果 CMS 后台添加自定义菜单：
 
 ```
-BBJ管理,/bbj/index.php
+XXJ管理,/xxj/index.php
 ```
 
 ## 使用
 
 ### 管理界面
 
-访问 `https://你的域名/bbj/index.php`，在表单中选择参数后点击「获取代码」，复制生成的链接。
+访问 `https://你的域名/xxj/index.php`，在表单中选择参数后点击「获取代码」，复制生成的链接。
 
 ### URL 参数
 
@@ -132,13 +134,13 @@ BBJ管理,/bbj/index.php
 
 ```
 # 默认配置：热门影片，豆瓣ID匹配，10张，推荐等级9
-https://你的域名/bbj/haibao.php?bbjtype=hot&num=10&level=9&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php
+https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php
 
 # 最新上映，影片名称匹配，6张
-https://你的域名/bbj/haibao.php?bbjtype=new&num=6&level=9&filtercondi=name&orderby=ASC&cmsname=maccms10&codetype=php
+https://你的域名/xxj/haibao.php?bbjtype=new&num=6&level=9&filtercondi=name&orderby=ASC&cmsname=maccms10&codetype=php
 
 # 高分均衡，8张，推荐等级5
-https://你的域名/bbj/haibao.php?bbjtype=even&num=8&level=5&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php
+https://你的域名/xxj/haibao.php?bbjtype=even&num=8&level=5&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php
 ```
 
 ### 定时自动更新
@@ -147,12 +149,12 @@ https://你的域名/bbj/haibao.php?bbjtype=even&num=8&level=5&filtercondi=douba
 
 ```bash
 # 每天凌晨 3 点自动更新
-0 3 * * * curl -s "https://你的域名/bbj/haibao.php?bbjtype=hot&num=10&level=9&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php" > /dev/null 2>&1
+0 3 * * * curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php" > /dev/null 2>&1
 ```
 
 ### 清除缓存
 
-访问 `https://你的域名/bbj/clear.php` 清空缓存目录，下次访问将重新从 TMDB 拉取数据。
+访问 `https://你的域名/xxj/clear.php` 清空缓存目录，下次访问将重新从 TMDB 拉取数据。
 
 ## 匹配机制
 

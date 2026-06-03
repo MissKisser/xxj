@@ -1,7 +1,22 @@
 
-插件使用方法：（https://baiduc.github.io/pub/bbj/plug/word.html）
+XXJ 插件使用方法：
 
-一.将文件放到跟目录并解压
-二.将后台管理添加到自定义菜单，复制下方配置到自定义菜单,自定义菜单下方点击保存
-BBJ管理,/bbj/index.php
-三.刷新苹果cms后台，可在首页看到BBJ管理
+一、将 xxj 目录上传至站点根目录（与 index.php 同级）
+二、登录苹果CMS后台，进入 系统 -> 网站参数 -> 自定义菜单，填入以下配置后点击保存
+XXJ管理,/xxj/index.php
+三、刷新苹果CMS后台，首页即可看到「XXJ管理」入口
+
+配置说明：
+- 首次使用需编辑 xxj/haibao_config.php 填入 TMDB API Key
+- API Key 申请地址：https://www.themoviedb.org/settings/api
+- 缓存清理：访问 https://你的域名/xxj/clear.php
+
+目录结构：
+xxj/
+├── haibao.php            海报更新入口
+├── haibao_config.php     TMDB 凭证与运行参数
+├── index.php             管理界面入口
+├── index.html            管理界面页面
+├── pinglun.php           评论入口（已禁用）
+├── clear.php             缓存清理工具
+└── cache/                运行时缓存（自动创建）
