@@ -1,6 +1,6 @@
 # XXJ - 苹果 CMS 海报轮播图管理插件
 
-XXJ 由 [BBJ](https://baiduc.github.io/pub/bbj/plug/word.html) 二次开发而来。在 BBJ 原有功能基础上，剔除了所有已失效的远程依赖，将数据源切换至 TMDB 开放 API，实现完全本地化运行。
+XXJ 由 [BBJ](https://baiduc.github.io/pub/bbj/plug/word.html) 二次开发而来。在 BBJ 原有功能基础上，剔除了所有已失效的远程依赖，将数据源切换至 TMDB 开放 API + 猫眼热映数据，实现完全本地化运行。
 
 > **鸣谢 BBJ**：本项目的管理界面（layui 表单）、URL 参数规范和轮播图写入策略均沿用 BBJ 的设计。感谢 BBJ 团队为苹果 CMS 社区提供的开源插件。
 >
@@ -8,66 +8,52 @@ XXJ 由 [BBJ](https://baiduc.github.io/pub/bbj/plug/word.html) 二次开发而�
 
 ## 与 BBJ 的区别
 
-| 维度 | BBJ 原版 | XXJ 二次开发版 |
-|------|----------|----------------|
-| 数据源 | 远程服务 `bibij.icu` 生成 SQL（已失效） | TMDB v3 API 直连，获取热门/最新/高分影片 |
-| 海报图源 | 远程服务返回图片 URL | TMDB CDN (`image.tmdb.org`)，支持 poster/backdrop 两种比例 |
+| 维度 | BBJ 原版 | XXJ v3.0 |
+|------|----------|----------|
+| 数据源 | 远程服务 `bibij.icu` 生成 SQL（已失效） | 猫眼热映 + TMDB API + 本地数据库，三种独立数据源 |
+| 海报图源 | 远程服务返回图片 URL | TMDB CDN (`image.tmdb.org`)，16:9 横幅图 |
 | 代码执行 | `eval(远程 PHP)` | 纯本地 PHP，无 `eval`、无远程代码拉取 |
-| 影片匹配 | `bibij.icu` 按 `filtercondi=doubanid` 生成 SQL | 本地按 `vod_name` 精确匹配，`filtercondi` 参数支持 `doubanid`（校验豆瓣 ID）和 `name`（纯标题匹配）两种模式 |
-| 重复片名 | 由远程服务处理 | `orderby` 参数控制同名多部时取最近/最早记录 |
-| 推荐等级 | 硬编码 level=9 | `level` 参数动态可配（1-9） |
+| 降级能力 | 无 | 外部 API 不可用时自动回退到本地数据库排序 |
 | 管理界面 | 远程拉取 `index.html` | 本地化 `index.html`，不再做远程同步 |
-| 缓存 | 1 小时文件缓存 | 保留，缓存结构优化为数组存储（含影片标题） |
 | 安全 | 远程 SQL 直接执行（无预编译） | 全部 `mysqli::prepare` + `bind_param` 预编译 |
-| 评论/弹幕 | 依赖 `dm.bbj.icu` / `bbj.icu` | 已禁用，入口保留防止 404 |
-
-### 引入的新组件
-
-- **TMDB v3 API**：作为唯一外部数据源，获取影片列表和海报图 URL
-- **本地配置文件** `haibao_config.php`：TMDB API Key、图片尺寸、缓存 TTL 等参数集中管理
-- **配置文件保护**：`BBJ_INCLUDED` 常量守卫 + 403 响应，防止凭证被直接访问
-- **缓存清理工具** `clear.php`：一键清空缓存目录
-
-### 剔除的依赖
-
-- `bibij.icu`（SQL 生成服务，已失效）
-- `bbj.icu`（评论/弹幕服务，域名已停放）
-- `baiduc.github.io/check.txt`（远程文件同步协议）
-- 所有 `eval()` 调用
-- 远程 PHP/HTML 模板拉取
 
 ## 功能
 
-- 三种更新策略：最热影片 / 最新上映 / 高分均衡
-- 两种匹配模式：豆瓣 ID 校验 / 纯影片名称
+- **三种更新模式，数据源完全独立**：
+  - **最热**：猫眼热映榜单 → 本地匹配 → TMDB 搜图；降级到本地热度排序
+  - **最新**：本地数据库按入库时间倒序 → TMDB 搜图；降级只更新推荐等级
+  - **最高分**：TMDB 高分榜 → 本地匹配，直接用 TMDB 返回的横图；降级到本地评分排序
+- 匹配不足时自动翻页补齐（可关闭）
 - 16:9 横幅图（backdrop）适配轮播图区域
-- 1 小时文件缓存，减少 TMDB API 调用
+- 1 小时文件缓存，减少外部 API 调用
 - 完全本地化，无任何外部代码执行依赖
-- URL 参数与原 BBJ 插件完全兼容
+- URL 参数与原 BBJ 插件完全兼容（`even` 自动映射为 `top`）
 
 ## 文件说明
 
 ```
 xxj/
-├── haibao.php          # 海报更新入口（核心业务）
-├── haibao_config.php   # TMDB 凭证与运行参数配置（需自行创建）
-├── haibao_config.example.php  # 配置文件模板
-├── index.php           # 管理界面入口
-├── index.html          # 管理界面（layui 表单）
-├── pinglun.php         # 评论入口（已禁用）
-├── clear.php           # 缓存清理工具
-├── 使用教程.txt         # 安装使用说明
-├── cache/              # 文件缓存目录（运行时自动创建）
-└── .gitignore          # 忽略凭证与缓存
+├── haibao.php                # 海报更新入口（核心业务）
+├── haibao_config.php         # TMDB 凭证与运行参数配置（需自行创建）
+├── haibao_config.example.php # 配置文件模板
+├── index.php                 # 管理界面入口
+├── index.html                # 管理界面（layui 表单）
+├── pinglun.php               # 评论入口（已禁用）
+├── clear.php                 # 缓存清理工具
+├── 使用教程.txt               # 安装使用说明
+├── cache/                    # 文件缓存目录（运行时自动创建）
+└── .gitignore                # 忽略凭证与缓存
 ```
 
-## 配置
+## 安装
 
 ### 1. 申请 TMDB API Key
 
 前往 [https://www.themoviedb.org/settings/api](https://www.themoviedb.org/settings/api) 注册并申请 API Key（v3 auth）。
 
-### 2. 编辑 `haibao_config.php`
+### 2. 创建配置文件
+
+复制 `haibao_config.example.php` 为 `haibao_config.php`，填入你的 TMDB API Key：
 
 ```php
 <?php
@@ -77,20 +63,23 @@ if (!defined('BBJ_INCLUDED')) {
 }
 
 return [
-    'tmdb_v3_key'    => '你的TMDB_API_KEY',  // 必填
-    'tmdb_lang'      => 'zh-CN',             // 接口语言
-    'tmdb_region'    => 'HK',                // 地区
-    'image_field'    => 'backdrop',          // poster(2:3竖图) 或 backdrop(16:9横图)
-    'image_size'     => 'w500',              // poster 尺寸：w185/w342/w500/original
-    'backdrop_size'  => 'w1280',             // backdrop 尺寸：w300/w780/w1280/original
-    'num_max'        => 20,                  // 轮播图最大张数
-    'cache_ttl'      => 3600,                // 缓存秒数（默认1小时）
-    'db_table'       => 'mac_vod',           // 数据库表名
-    'slide_sep'      => '|',                 // 轮播图字段分隔符（兼容保留）
+    'tmdb_v3_key'         => '你的TMDB_API_KEY',  // 必填
+    'tmdb_lang'           => 'zh-CN',             // 接口语言
+    'tmdb_region'         => 'HK',                // 地区
+    'image_field'         => 'backdrop',          // poster(2:3竖图) 或 backdrop(16:9横图)
+    'image_size'          => 'w500',              // poster 尺寸：w185/w342/w500/original
+    'backdrop_size'       => 'w1280',             // backdrop 尺寸：w300/w780/w1280/original
+    'num_max'             => 20,                  // 轮播图最大张数
+    'cache_ttl'           => 3600,                // 缓存秒数（默认1小时）
+    'db_table'            => 'mac_vod',           // 数据库表名
+    'slide_sep'           => '|',                 // 轮播图字段分隔符（兼容保留）
+    'maoyan_enabled'      => true,                // 是否启用猫眼数据源（hot 模式）
+    'maoyan_timeout'      => 8,                   // 猫眼 API 超时秒数
+    'tmdb_search_timeout' => 5,                   // TMDB 搜索 API 超时秒数
 ];
 ```
 
-### 3. 安装到苹果 CMS
+### 3. 上传到苹果 CMS
 
 将 `xxj/` 目录上传至站点根目录：
 
@@ -107,6 +96,8 @@ return [
     ├── clear.php
     └── 使用教程.txt
 ```
+
+### 4. 添加后台菜单
 
 在苹果 CMS 后台添加自定义菜单：
 
@@ -126,49 +117,106 @@ XXJ管理,/xxj/index.php
 
 | 参数 | 取值 | 默认 | 说明 |
 |------|------|------|------|
-| `bbjtype` | `hot` / `new` / `even` | `hot` | hot=最热，new=最新上映，even=高分影片 |
-| `filtercondi` | `doubanid` / `name` | `doubanid` | doubanid=按豆瓣ID校验匹配，name=纯影片名称匹配 |
-| `orderby` | `ASC` / `DESC` | `ASC` | 同名多部时的选取顺序。ASC=取最近一次，DESC=取第一次 |
+| `bbjtype` | `hot` / `new` / `top` / `even` | `hot` | 更新模式。hot=最热，new=最新，top=最高分，even=兼容旧版（等同 top） |
+| `autofill` | `on` / `off` | `on` | 匹配不足时自动翻页补齐 |
 | `num` | 1-20 整数 | 10 | 轮播图张数 |
 | `level` | 1-9 整数 | 9 | 推荐等级（需与模板对应） |
-| `cmsname` | 任意字符串 | - | 兼容原插件参数，内部不使用 |
-| `codetype` | 任意字符串 | - | 兼容原插件参数，内部不使用 |
+| `orderby` | `ASC` / `DESC` | `ASC` | 同名多部时的选取顺序。ASC=取最近一次，DESC=取第一次 |
+| `cmsname` | 任意字符串 | - | 兼容原插件参数，内部忽略 |
+| `codetype` | 任意字符串 | - | 兼容原插件参数，内部忽略 |
+| `filtercondi` | 任意字符串 | - | 兼容原插件参数，内部忽略 |
 
 ### 示例链接
 
 ```
-# 默认配置：热门影片，豆瓣ID匹配，10张，推荐等级9
-https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php
+# 最热影片，10张，推荐等级9，自动补齐
+https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&autofill=on&cmsname=maccms10&codetype=php
 
-# 最新上映，影片名称匹配，6张
-https://你的域名/xxj/haibao.php?bbjtype=new&num=6&level=9&filtercondi=name&orderby=ASC&cmsname=maccms10&codetype=php
+# 最新入库，6张
+https://你的域名/xxj/haibao.php?bbjtype=new&num=6&level=9
 
-# 高分均衡，8张，推荐等级5
-https://你的域名/xxj/haibao.php?bbjtype=even&num=8&level=5&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php
+# 最高分，8张，推荐等级5，不自动补齐
+https://你的域名/xxj/haibao.php?bbjtype=top&num=8&level=5&autofill=off
 ```
 
-### 定时自动更新
+## 定时自动更新（宝塔任务计划）
 
-将链接添加到服务器 cron 任务：
+推荐通过宝塔面板的计划任务实现每日自动更新海报。
+
+### 配置步骤
+
+1. 登录宝塔面板
+2. 进入 **计划任务** → 点击 **添加任务**
+3. 任务类型选择 **Shell 脚本**
+4. 任务名称：`XXJ海报自动更新`
+5. 执行周期：选择 **每天**，时间设为凌晨低峰时段（如 03:00）
+6. 脚本内容：
+
+```bash
+#!/bin/bash
+# XXJ 海报轮播图自动更新
+# 根据需要选择 hot（最热）/ new（最新）/ top（最高分）
+
+# 最热模式
+curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&autofill=on" >> /tmp/xxj_hot.log 2>&1
+
+# 如需同时更新多种模式，取消注释以下行：
+# curl -s "https://你的域名/xxj/haibao.php?bbjtype=new&num=10&level=9&autofill=on" >> /tmp/xxj_new.log 2>&1
+# curl -s "https://你的域名/xxj/haibao.php?bbjtype=top&num=10&level=9&autofill=on" >> /tmp/xxj_top.log 2>&1
+```
+
+7. 点击 **提交** 保存任务
+
+### 多模式组合示例
+
+如果需要不同时段更新不同模式：
+
+| 任务名称 | 执行周期 | URL |
+|----------|---------|-----|
+| 海报-最热 | 每天 03:00 | `bbjtype=hot&num=10&level=9` |
+| 海报-最新 | 每天 15:00 | `bbjtype=new&num=10&level=9` |
+| 海报-最高分 | 每周一 06:00 | `bbjtype=top&num=10&level=9` |
+
+### 直接用 cron 命令（非宝塔环境）
 
 ```bash
 # 每天凌晨 3 点自动更新
-0 3 * * * curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&filtercondi=doubanid&orderby=ASC&cmsname=maccms10&codetype=php" > /dev/null 2>&1
+0 3 * * * curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&autofill=on" > /dev/null 2>&1
 ```
 
-### 清除缓存
+## 清除缓存
 
-访问 `https://你的域名/xxj/clear.php` 清空缓存目录，下次访问将重新从 TMDB 拉取数据。
+访问 `https://你的域名/xxj/clear.php` 清空缓存目录，下次访问将重新从数据源拉取。
+
+## 三种模式详细说明
+
+### hot（最热）
+
+从猫眼热映榜获取当前正在上映的影片列表，在本地 `mac_vod` 表中按 `vod_name` 精确匹配，匹配到的影片再去 TMDB 搜索获取 16:9 横图。
+
+**降级**：猫眼 API 不可用时，自动切换为本地 `mac_vod` 按 `vod_hits`（播放量）倒序排列。
+
+### new（最新）
+
+直接从本地 `mac_vod` 表按 `vod_time`（入库时间）倒序取最新影片，无外部列表依赖。逐条去 TMDB 搜索获取横图。
+
+**降级**：TMDB 搜索不可用时，仅更新 `vod_level`（推荐等级），保持原图不变。
+
+### top（最高分）
+
+从 TMDB `movie/top_rated` 获取高分影片列表，在本地 `mac_vod` 中匹配。匹配到的影片直接使用 TMDB 返回的 `backdrop_path`，无需二次搜索。
+
+**降级**：TMDB 不可用时，自动切换为本地 `mac_vod` 按 `vod_score`（评分）倒序排列。
 
 ## 匹配机制
 
-插件通过 TMDB API 获取影片列表（含中文标题），然后在本地数据库 `mac_vod` 表中按 `vod_name` 精确匹配：
+所有模式均在本地数据库 `mac_vod` 表中按 `vod_name` 精确匹配：
 
-- **豆瓣 ID 模式**（`filtercondi=doubanid`）：匹配 `vod_name` 且 `vod_douban_id > 0`，确保目标为真实影片
-- **影片名称模式**（`filtercondi=name`）：仅按 `vod_name` 匹配，不校验豆瓣 ID，覆盖范围更广
-- **重复片名处理**：同名多部时按 `orderby` 参数决定取最近还是最早添加的记录
+- 匹配成功 → UPDATE 该影片的 `vod_pic_slide`（海报图 URL）和 `vod_level`（推荐等级）
+- 匹配失败 → 跳过，`autofill=on` 时继续取下一条直到凑够数量
+- 同名多部 → 按 `orderby` 参数决定取最近还是最早添加的记录
 
-匹配成功后，UPDATE 该影片的 `vod_pic_slide`（海报图 URL）和 `vod_level`（推荐等级）。模板标签 `{maccms:vod level="9"}` 自动读取这些数据展示轮播图。
+模板标签 `{maccms:vod level="9"}` 自动读取这些数据展示轮播图。
 
 ## 模板适配
 
@@ -186,7 +234,8 @@ https://你的域名/xxj/haibao.php?bbjtype=even&num=8&level=5&filtercondi=douba
 
 ## 注意事项
 
-- TMDB API 限制 50 请求/秒，1 小时缓存已足够覆盖正常使用
+- TMDB API 限制 40 请求/10 秒，插件内置 250ms 请求间隔 + 1 小时缓存，正常使用不会触发限流
+- 猫眼 API 为非官方接口，如遇封禁可在配置中设置 `maoyan_enabled => false` 关闭
 - 首次使用需清除苹果 CMS 后台缓存后才能在首页看到更新
 - `haibao_config.php` 包含 API 密钥，已在 `.gitignore` 中排除，请勿提交到公开仓库
 - 评论功能已禁用，`pinglun.php` 保留文件仅防止引用报 404
