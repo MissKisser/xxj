@@ -141,48 +141,9 @@ https://你的域名/xxj/haibao.php?bbjtype=top&num=8&level=5&autofill=off
 
 ## 定时自动更新（宝塔任务计划）
 
-推荐通过宝塔面板的计划任务实现每日自动更新海报。
+![推荐通过宝塔面板的计划任务实现每日自动更新海报。](baota-task.png)
 
-### 配置步骤
 
-1. 登录宝塔面板
-2. 进入 **计划任务** → 点击 **添加任务**
-3. 任务类型选择 **Shell 脚本**
-4. 任务名称：`XXJ海报自动更新`
-5. 执行周期：选择 **每天**，时间设为凌晨低峰时段（如 03:00）
-6. 脚本内容：
-
-```bash
-#!/bin/bash
-# XXJ 海报轮播图自动更新
-# 根据需要选择 hot（最热）/ new（最新）/ top（最高分）
-
-# 最热模式
-curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&autofill=on" >> /tmp/xxj_hot.log 2>&1
-
-# 如需同时更新多种模式，取消注释以下行：
-# curl -s "https://你的域名/xxj/haibao.php?bbjtype=new&num=10&level=9&autofill=on" >> /tmp/xxj_new.log 2>&1
-# curl -s "https://你的域名/xxj/haibao.php?bbjtype=top&num=10&level=9&autofill=on" >> /tmp/xxj_top.log 2>&1
-```
-
-7. 点击 **提交** 保存任务
-
-### 多模式组合示例
-
-如果需要不同时段更新不同模式：
-
-| 任务名称 | 执行周期 | URL |
-|----------|---------|-----|
-| 海报-最热 | 每天 03:00 | `bbjtype=hot&num=10&level=9` |
-| 海报-最新 | 每天 15:00 | `bbjtype=new&num=10&level=9` |
-| 海报-最高分 | 每周一 06:00 | `bbjtype=top&num=10&level=9` |
-
-### 直接用 cron 命令（非宝塔环境）
-
-```bash
-# 每天凌晨 3 点自动更新
-0 3 * * * curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&autofill=on" > /dev/null 2>&1
-```
 
 ## 清除缓存
 
@@ -237,5 +198,3 @@ curl -s "https://你的域名/xxj/haibao.php?bbjtype=hot&num=10&level=9&autofill
 - TMDB API 限制 40 请求/10 秒，插件内置 250ms 请求间隔 + 1 小时缓存，正常使用不会触发限流
 - 猫眼 API 为非官方接口，如遇封禁可在配置中设置 `maoyan_enabled => false` 关闭
 - 首次使用需清除苹果 CMS 后台缓存后才能在首页看到更新
-- `haibao_config.php` 包含 API 密钥，已在 `.gitignore` 中排除，请勿提交到公开仓库
-- 评论功能已禁用，`pinglun.php` 保留文件仅防止引用报 404
